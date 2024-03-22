@@ -13,16 +13,6 @@ import org.springframework.context.annotation.Profile;
 @Profile({"homework1"})
 @Configuration
 public class Homework1Config {
-
-//	@Bean
-//	public Declarables exchanges() {
-//		return new Declarables(
-//					new TopicExchange("request"),
-//					new TopicExchange("chat"),
-//					new TopicExchange("user"),
-//					new TopicExchange("room")
-//				);
-//	}
 	
 	@Bean( name="requestExchange" )
 	public TopicExchange requestExchange() {
