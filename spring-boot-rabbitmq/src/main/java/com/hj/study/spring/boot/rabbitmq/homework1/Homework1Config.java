@@ -71,16 +71,30 @@ public class Homework1Config {
 		}
 
 		@Bean
-		public Binding userBinding(TopicExchange chatExchange, Queue userQueue) {
-			return BindingBuilder.bind(userQueue)
+		public Binding userBinding(TopicExchange chatExchange, TopicExchange userExchange) {
+			return BindingBuilder.bind(userExchange)
 			    .to(chatExchange)
+			    .with("*.user.#");
+		}
+		
+		@Bean
+		public Binding userQueueBinding(TopicExchange userExchange, Queue userQueue) {
+			return BindingBuilder.bind(userQueue)
+			    .to(userExchange)
 			    .with("*.user.#");
 		}
 
 		@Bean
-		public Binding roomBinding(TopicExchange chatExchange, Queue roomQueue) {
-			return BindingBuilder.bind(roomQueue)
+		public Binding roomBinding(TopicExchange chatExchange, Queue roomExchange) {
+			return BindingBuilder.bind(roomExchange)
 			    .to(chatExchange)
+			    .with("*.room.#");
+		}
+		
+		@Bean
+		public Binding roomQueueBinding(TopicExchange roomExchange, Queue roomQueue) {
+			return BindingBuilder.bind(roomQueue)
+			    .to(roomExchange)
 			    .with("*.room.#");
 		}
 
