@@ -9,6 +9,7 @@ import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFacto
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,15 +43,10 @@ public class RabbitClientConfig {
 		return new Queue("user." + rabbitProperties.getUsername());
 	}
 	
-	@Bean( name="userExchange" )
-	public TopicExchange userExchange() {
-		return new TopicExchange("user");
-	}
-
 	@Bean
-	public Binding userBinding(TopicExchange userExchange, Queue myUserQueue) {
+	public Binding userBinding(Queue myUserQueue) {
 		return BindingBuilder.bind(myUserQueue)
-		    .to(userExchange)
+		    .to(new TopicExchange("user"))
 		    .with("chat.user." + rabbitProperties.getUsername());
 	}
 
