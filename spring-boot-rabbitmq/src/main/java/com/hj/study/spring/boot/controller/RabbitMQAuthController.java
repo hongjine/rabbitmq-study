@@ -90,6 +90,8 @@ public class RabbitMQAuthController {
 						&& Arrays.asList("configure", "read").stream().anyMatch(request.getPermission()::equals)
 					) {
 					return "allow";
+				} else if ("amq.default".equals(request.getName())) {
+					return "allow";
 				}
 				
 			// 3rd hw : allow declare queue - queue name : user.{userId}

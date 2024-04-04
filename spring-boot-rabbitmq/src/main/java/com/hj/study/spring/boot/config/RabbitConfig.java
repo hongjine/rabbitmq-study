@@ -1,15 +1,23 @@
 package com.hj.study.spring.boot.config;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.amqp.core.AnonymousQueue;
 import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.Binding.DestinationType;
 import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.CustomExchange;
+import org.springframework.amqp.core.Declarable;
+import org.springframework.amqp.core.Declarables;
 import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -53,6 +61,11 @@ public class RabbitConfig {
 	public FanoutExchange roomExchange() {
 		return new FanoutExchange("room");
 	}
+	
+	@Bean
+	public CustomExchange chatHashExchange() {
+		return new CustomExchange("chat-hash", "x-consistent-hash");
+	}
 
 	@Bean
 	public Queue commandQueue() {
@@ -68,6 +81,25 @@ public class RabbitConfig {
 	public Queue roomQueue() {
 		return new AnonymousQueue();
 	}
+	
+	@Bean
+	public Queue deadLetterQueue() {
+		return new Queue("dead-letter");
+	}
+	
+	@Bean
+	public Declarables chatHashQueueAndBindings(@Value("${rabbitmq.server.chat-concurrent}") int concurrent,
+			CustomExchange chatHash) {
+		List<Declarable> declarables = new ArrayList<>(concurrent * 2);
+
+		for (int i = 0; i < concurrent; i++) {
+			Queue queue = new Queue("chat." + i);
+			declarables.add(queue);
+			declarables.add(new Binding(queue.getName(), DestinationType.QUEUE, chatHash.getName(), "1", null));
+		}
+
+		return new Declarables(declarables);
+	}
 
 	@Bean
 	public Binding commandBinding(TopicExchange requestExchange, Queue commandQueue) {
@@ -81,6 +113,13 @@ public class RabbitConfig {
 		return BindingBuilder.bind(chatExchange)
 		    .to(requestExchange)
 		    .with("chat.#");
+	}
+	
+	@Bean
+	public Binding chatHashBinding(TopicExchange requestExchange, CustomExchange chatHashExchange) {
+		return BindingBuilder.bind(chatHashExchange)
+				.to(requestExchange)
+				.with("chat.#");
 	}
 
 	@Bean
