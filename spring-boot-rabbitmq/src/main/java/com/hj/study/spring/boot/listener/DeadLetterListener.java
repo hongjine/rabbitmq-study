@@ -4,6 +4,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+//4th hw : setting dead letter queue
 @Profile("server")
 @Component
 public class DeadLetterListener {

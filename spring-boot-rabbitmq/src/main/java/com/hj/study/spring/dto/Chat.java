@@ -2,6 +2,7 @@ package com.hj.study.spring.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+//4th hw
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Chat {
 

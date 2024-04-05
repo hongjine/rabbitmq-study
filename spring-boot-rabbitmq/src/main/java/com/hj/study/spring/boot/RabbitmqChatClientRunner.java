@@ -28,6 +28,7 @@ public class RabbitmqChatClientRunner implements CommandLineRunner {
 			while(true) {
 				String message = scanner.nextLine();
 
+				//4th hw : send object message. not string
 				Chat chat = new Chat();
 				chat.setBody(message);
 				chat.setUserName(rabbitProperties.getUsername());

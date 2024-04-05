@@ -33,6 +33,7 @@ public class RabbitClientConfig {
 	@Autowired
 	private RabbitProperties rabbitProperties;
 
+	//4th hw : setting Json messageConverter
 	@Bean
 	public MessageConverter messageConverter() {
 		ContentTypeDelegatingMessageConverter converter = new ContentTypeDelegatingMessageConverter(
@@ -65,6 +66,7 @@ public class RabbitClientConfig {
 		return factory;
 	}
 	
+	//4th hw : setting Json messageConverter
 	@Bean
 	public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, MessageConverter messageConverter) {
 		RabbitTemplate template = new RabbitTemplate(connectionFactory);
@@ -76,7 +78,7 @@ public class RabbitClientConfig {
 	public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory, MessageConverter messageConverter) {
 		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
 		factory.setConnectionFactory(connectionFactory);
-		factory.setMessageConverter(messageConverter);
+		factory.setMessageConverter(messageConverter);  //4th hw : setting Json messageConverter
 		factory.setErrorHandler(rejectErrorHandler());
 		factory.setPrefetchCount(3);
 		factory.setConcurrentConsumers(3);
@@ -104,10 +106,10 @@ public class RabbitClientConfig {
 		return new CustomFatalExceptionStrategy();
 	}
 	
+	//4th hw : setting dead letter queue connect my queue
 	@Bean
 	public Queue myUserQueue() {
-//		return new Queue("user." + rabbitProperties.getUsername());
-		
+//		return new Queue("user." + rabbitProperties.getUsername());		
 		return QueueBuilder.durable("user." + rabbitProperties.getUsername())
 				.deadLetterExchange("")
 				.deadLetterRoutingKey("dead-letter").build();

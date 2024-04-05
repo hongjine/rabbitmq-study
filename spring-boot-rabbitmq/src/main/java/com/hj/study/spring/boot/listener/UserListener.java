@@ -23,6 +23,8 @@ public class UserListener {
         System.out.println(" [x] Received String '" + in + "'");
     }
 	
+
+    //4th hw : setting Json received Class'Chat'
 	@RabbitHandler
 	public void receiveChat(Chat in,
             @Headers Map<String, Object> headers,

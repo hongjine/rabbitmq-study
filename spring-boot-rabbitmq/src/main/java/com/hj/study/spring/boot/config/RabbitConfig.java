@@ -82,6 +82,7 @@ public class RabbitConfig {
 		return new AnonymousQueue();
 	}
 	
+	//4th hw : setting dead letter queue
 	@Bean
 	public Queue deadLetterQueue() {
 		return new Queue("dead-letter");
