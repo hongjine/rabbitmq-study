@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +20,7 @@ import com.hj.study.spring.dto.TopicPathRequest;
 import com.hj.study.spring.dto.UserPathRequest;
 import com.hj.study.spring.dto.VhostPathRequest;
 
+@Profile("receiver")
 @RestController
 @RequestMapping("/rabbit/auth")
 public class RabbitMQAuthController {
@@ -92,6 +95,8 @@ public class RabbitMQAuthController {
 					return "allow";
 				} else if ("amq.default".equals(request.getName())) {
 					return "allow";
+				} else if (StringUtils.startsWithIgnoreCase(request.getName(), "tut.")) {
+					return "allow";
 				}
 				
 			// 3rd hw : allow declare queue - queue name : user.{userId}
@@ -125,13 +130,16 @@ public class RabbitMQAuthController {
 		}
 		
 		// 3rd hw : allow publish message topic('request')
-		if ("topic".equals(request.getResource())
-				&&"request".equals(request.getName())
-				&& "write".equals(request.getPermission())
-				&& ("chat.user." + request.getUsername()).equals(request.getRouting_key())
-				) {
-			return "allow";
-		}
+		if ("topic".equals(request.getResource())) {
+			if("request".equals(request.getName())) {
+				if ("write".equals(request.getPermission())
+						&& ("chat.user." + request.getUsername()).equals(request.getRouting_key())) {
+				return "allow";
+				}
+			} else if (StringUtils.startsWithIgnoreCase(request.getName(), "tut.")) {
+				return "allow";
+			}
+		} 
 		
 		// 3rd hw :  allow binding : user.{userId} queue to 'user' exchange with chat.user.{userid} routing key
 		if (allowUserIdList.stream().anyMatch(request.getUsername()::equals)

@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-@Profile({"tut5","topics"})
+@Profile({"tut4","topics"})
 @Configuration
 public class Tut4Config {
 
