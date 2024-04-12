@@ -3,6 +3,7 @@ package com.hj.study.spring.boot.config;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.core.TopicExchange;
@@ -115,11 +116,26 @@ public class RabbitClientConfig {
 				.deadLetterRoutingKey("dead-letter").build();
 	}
 	
+	//
 	@Bean
-	public Binding userBinding(Queue myUserQueue) {
-		return BindingBuilder.bind(myUserQueue)
+	public FanoutExchange userFanoutExchange() {
+		return new FanoutExchange("user." + rabbitProperties.getUsername());
+	}
+	
+	@Bean
+	public Binding userToUserFanoutBinding(FanoutExchange userFanoutExchange) {
+		return BindingBuilder.bind(userFanoutExchange)
 		    .to(new TopicExchange("user"))
-		    .with("chat.user." + rabbitProperties.getUsername());
+//		    .with("chat.user." + rabbitProperties.getUsername());
+		    .with("*.user." + rabbitProperties.getUsername());
+	}
+	
+	@Bean
+	public Binding userFanoutToUserQueue(FanoutExchange userFanoutExchange, Queue myUserQueue) {
+		return BindingBuilder.bind(myUserQueue)
+		    .to(userFanoutExchange);
+//		    .with("chat.user." + rabbitProperties.getUsername());
+		    
 	}
 
 }

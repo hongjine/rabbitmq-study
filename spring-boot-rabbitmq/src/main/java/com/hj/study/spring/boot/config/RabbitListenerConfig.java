@@ -21,7 +21,8 @@ public class RabbitListenerConfig implements RabbitListenerConfigurer {
 	private ChatListener chatListener;
 
 	@Autowired
-	SimpleRabbitListenerContainerFactory chatListenerContainerFactory;
+//	SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory;
+	SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory;
 
 	@Override
 	public void configureRabbitListeners(RabbitListenerEndpointRegistrar registrar) {
@@ -34,7 +35,7 @@ public class RabbitListenerConfig implements RabbitListenerConfigurer {
 			endpoint.setMessageListener(chatListener);
 			endpoint.setExclusive(false);
 			
-			registrar.registerEndpoint(endpoint, chatListenerContainerFactory);
+			registrar.registerEndpoint(endpoint, rabbitListenerContainerFactory);
 		}
 	}
 	

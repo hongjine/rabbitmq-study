@@ -20,7 +20,7 @@ import com.hj.study.spring.dto.TopicPathRequest;
 import com.hj.study.spring.dto.UserPathRequest;
 import com.hj.study.spring.dto.VhostPathRequest;
 
-@Profile("receiver")
+@Profile("server")
 @RestController
 @RequestMapping("/rabbit/auth")
 public class RabbitMQAuthController {
@@ -89,8 +89,9 @@ public class RabbitMQAuthController {
 				
 				// 3rd hw : allow binding - 'user.{userId}' queue to 'user' exchange
 				// 			source('user' exchange) required perm is read.
-				} else if ("user".equals(request.getName())
-						&& Arrays.asList("configure", "read").stream().anyMatch(request.getPermission()::equals)
+				} else if (
+						("user".equals(request.getName()) || ("user." + request.getUsername()).equals(request.getName()))
+						&& Arrays.asList("configure", "read", "write").stream().anyMatch(request.getPermission()::equals)
 					) {
 					return "allow";
 				} else if ("amq.default".equals(request.getName())) {
@@ -133,7 +134,11 @@ public class RabbitMQAuthController {
 		if ("topic".equals(request.getResource())) {
 			if("request".equals(request.getName())) {
 				if ("write".equals(request.getPermission())
-						&& ("chat.user." + request.getUsername()).equals(request.getRouting_key())) {
+						&& 
+							("chat.user." + request.getUsername()).equals(request.getRouting_key())
+							|| ("command.invite").equals(request.getRouting_key())
+							|| ("command.create").equals(request.getRouting_key())
+						) {
 				return "allow";
 				}
 			} else if (StringUtils.startsWithIgnoreCase(request.getName(), "tut.")) {
@@ -146,7 +151,9 @@ public class RabbitMQAuthController {
 				&& "topic".equals(request.getResource())
 				&& "user".equals(request.getName())
 				&& "read".equals(request.getPermission())
-				&& ( ("chat.user." + request.getUsername()).equals(request.getRouting_key()))
+				&& ( 
+						("chat.user." + request.getUsername()).equals(request.getRouting_key()))
+						|| request.getRouting_key().contains(".user.")
 				) {
 			return "allow";
 		} 
